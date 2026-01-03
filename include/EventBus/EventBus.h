@@ -36,8 +36,9 @@ private:
     std::thread worker_thread_;
     std::deque<std::unique_ptr<Event::Event>> event_queue_;
     std::condition_variable cv_;
-    std::atomic<bool> running_{false};
-    std::atomic<bool> stop_requested_{false};
+    
+    bool running_{false};
+    bool stop_requested_{false};
 };
 
 

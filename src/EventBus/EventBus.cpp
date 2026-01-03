@@ -13,8 +13,8 @@ void EventBus::publish(std::unique_ptr<Event::Event> event) noexcept
     {
         std::lock_guard<std::mutex> lock(mutex_);
         event_queue_.emplace_back(std::move(event));
+        cv_.notify_one();
     }
-    cv_.notify_one();
 }
 
 void EventBus::start()
@@ -39,12 +39,16 @@ void EventBus::stop() noexcept
             return; // Not running
         }
         stop_requested_ = true;
+        cv_.notify_one();
     }
-    cv_.notify_one();
+
     if (worker_thread_.joinable()) {
         worker_thread_.join();
     }
-    running_ = false;
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        running_ = false;
+    }
 }
 
 void EventBus::dispatchLoop()

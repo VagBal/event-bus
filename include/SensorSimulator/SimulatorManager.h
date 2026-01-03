@@ -1,10 +1,10 @@
 #ifndef SENSOR_SIMULATOR_SIMULATOR_MANAGER_H
 #define SENSOR_SIMULATOR_SIMULATOR_MANAGER_H
 
-#include <iostream>
 #include <thread>
 #include <vector>
-#include <memory>
+#include <atomic>
+#include <mutex>
 
 #include "ISensorSimulator.h"
 
@@ -13,6 +13,12 @@ namespace SensorSimulator
 
 class SimulatorManager
 {
+enum class SimulatorState
+{
+    Stopped,
+    Running
+};
+
 public:
     SimulatorManager() = default;
     ~SimulatorManager();
@@ -25,14 +31,10 @@ public:
     void startAll();
     void stopAll();
 private:
-    enum class SimulatorState
-    {
-        Stopped,
-        Running
-    };
     std::vector<std::unique_ptr<ISensorSimulator>> simulators_;
     std::vector<std::thread> threads_;
-    SimulatorState state_ = SimulatorState::Stopped;
+    std::atomic<SimulatorState> state_{SimulatorState::Stopped};
+    mutable std::mutex mutex_;
 };
 
 } // namespace SensorSimulator 

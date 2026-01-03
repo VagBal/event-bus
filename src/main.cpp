@@ -1,6 +1,7 @@
 #include <iostream>
-#include <future>
-
+#include <thread>
+#include <chrono>
+#include <csignal>
 
 #include "SensorSimulator/SimulatorManager.h"
 #include "SensorSimulator/GasSensorSimulator.h"
@@ -9,8 +10,16 @@
 #include "EventBus/EventBus.h"
 #include "ConsumerSimulator/TestConsumerSimulator.h"
 
+static volatile std::sig_atomic_t g_stop_requested = 0;
+
+static void onSignal(int)
+{
+    g_stop_requested = 1; // Ctrl+C sets this
+}
+
 int main(int argc, const char** argv)
 {
+    std::signal(SIGINT, onSignal);  // Ctrl+C
     SensorSimulator::SimulatorManager simulator_manager;
     EventBus event_bus;
 
@@ -26,16 +35,16 @@ int main(int argc, const char** argv)
     // Start all simulators
     simulator_manager.startAll();
 
-    // Wait for termination signal (e.g., CTRL+C)
-    auto input_feature = std::async(std::launch::async, []() {
-        std::cin.get();
-    });
+    const auto start = std::chrono::steady_clock::now();
+    const auto timeout = std::chrono::seconds(60);
 
-    if (input_feature.wait_for(std::chrono::seconds(60)) == std::future_status::timeout) {
-        std::cout << "\r\nTimeout reached, stopping simulations..." << "\n";
-    } else {
-        std::cout << "\r\nUser requested stop, stopping simulations..." << "\n";
+    while (!g_stop_requested &&
+           (std::chrono::steady_clock::now() - start) < timeout)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
+
+    std::cout << "\r\nStopping simulations..." << "\n";
 
     // Stop all simulators
     simulator_manager.stopAll();

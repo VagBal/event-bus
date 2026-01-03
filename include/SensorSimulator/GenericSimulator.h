@@ -8,11 +8,12 @@
 
 #include "ISensorSimulator.h"
 #include "EventBus/EventBus.h"
+#include "Event/SensorEvent.h"
 
 namespace SensorSimulator
 {
 
-template<typename T, typename U>
+template<Event::SensorType T, uint8_t U>
 class GenericSimulator : public ISensorSimulator
 {
 public:
@@ -24,7 +25,7 @@ public:
 
     void runSimulation() override
     {
-        Even::SensorEvent sensor(T);
+        Event::SensorEvent sensor(T);
 
         while(!stop_requested_.load(std::memory_order_acquire))
         {
