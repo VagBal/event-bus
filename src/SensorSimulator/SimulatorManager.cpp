@@ -1,12 +1,25 @@
 #include "SensorSimulator/SimulatorManager.h"
 #include <iostream>
 
+/**
+ * @brief Destructor - ensures clean shutdown
+ * 
+ * Automatically stops all running simulators and joins threads
+ * to prevent resource leaks.
+ */
 SensorSimulator::SimulatorManager::~SimulatorManager()
 {
     // Stop all simulators and join threads
     stopAll();
 }
 
+/**
+ * @brief Adds a simulator to the managed collection
+ * @param simulator Unique pointer to simulator (ownership transferred)
+ * 
+ * Fails with error message if called while simulators are running.
+ * Thread-safe for concurrent additions when stopped.
+ */
 void SensorSimulator::SimulatorManager::addSimulator(std::unique_ptr<ISensorSimulator> simulator)
 {
     std::lock_guard<std::mutex> lock(mutex_);
@@ -20,6 +33,13 @@ void SensorSimulator::SimulatorManager::addSimulator(std::unique_ptr<ISensorSimu
     simulators_.emplace_back(std::move(simulator));
 }
 
+/**
+ * @brief Starts all simulators on separate threads
+ * 
+ * Creates one thread per simulator and calls runSimulation() on each.
+ * Uses atomic compare-exchange for thread-safe state transition.
+ * Idempotent - logs error if already running.
+ */
 void SensorSimulator::SimulatorManager::startAll()
 {
     SimulatorState expected = SimulatorState::Stopped;
@@ -45,6 +65,13 @@ void SensorSimulator::SimulatorManager::startAll()
     std::cout << "All simulators started." << "\n";
 }
 
+/**
+ * @brief Stops all simulators and waits for threads
+ * 
+ * Calls stopSimulation() on each simulator, then joins all threads.
+ * Uses atomic compare-exchange for thread-safe state transition.
+ * Idempotent - returns immediately if not running.
+ */
 void SensorSimulator::SimulatorManager::stopAll()
 {
     SimulatorState expected = SimulatorState::Running;

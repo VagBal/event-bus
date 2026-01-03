@@ -43,9 +43,12 @@
 # Build directories
 build/
 .vscode/
+docs/
 
 # Profile results
 callgrind/
 gprof/
 memcheck/
 helgrind/
+coverage/
+.tool_result/

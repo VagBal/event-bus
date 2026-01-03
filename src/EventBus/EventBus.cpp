@@ -1,12 +1,26 @@
 #include <iostream>
 #include "EventBus/EventBus.h"
 
+/**
+ * @brief Registers a new event handler
+ * @param handler Function to be called for each event
+ * 
+ * Thread-safe registration of event handlers. Handlers are stored in
+ * order of subscription and will be invoked in that order for each event.
+ */
 void EventBus::subscribe(HandlerType handler)
 {
     std::lock_guard<std::mutex> lock(mutex_);
     handlers_.emplace_back(std::move(handler));
 }
 
+/**
+ * @brief Queues an event for asynchronous dispatch
+ * @param event Unique pointer to event (ownership transferred)
+ * 
+ * Adds the event to the queue and notifies the worker thread.
+ * Events are dispatched in FIFO order.
+ */
 void EventBus::publish(std::unique_ptr<Event::Event> event) noexcept
 {
     std::cout << "EventBus publishing event..." << "\n";
@@ -17,6 +31,12 @@ void EventBus::publish(std::unique_ptr<Event::Event> event) noexcept
     }
 }
 
+/**
+ * @brief Starts the event dispatching worker thread
+ * 
+ * Creates and starts the worker thread that processes queued events.
+ * Idempotent - calling on already running bus has no effect.
+ */
 void EventBus::start()
 {
     std::cout << "EventBus starting..." << "\n";
@@ -30,6 +50,12 @@ void EventBus::start()
     worker_thread_ = std::thread(&EventBus::dispatchLoop, this);
 }
 
+/**
+ * @brief Stops event dispatching and drains queue
+ * 
+ * Signals stop to worker thread, waits for all queued events to be
+ * processed, then joins the thread. Idempotent.
+ */
 void EventBus::stop() noexcept
 {
     std::cout << "EventBus stopping..." << "\n";
@@ -51,6 +77,16 @@ void EventBus::stop() noexcept
     }
 }
 
+/**
+ * @brief Main event processing loop (runs on worker thread)
+ * 
+ * Continuously:
+ * 1. Waits for events or stop signal
+ * 2. Dequeues event and copies handlers
+ * 3. Releases lock before invoking handlers
+ * 4. Dispatches event to all registered handlers
+ * 5. Repeats until stop requested and queue empty
+ */
 void EventBus::dispatchLoop()
 {
     while (true)

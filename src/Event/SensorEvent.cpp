@@ -3,6 +3,16 @@
 
 #include "Event/SensorEvent.h"
 
+/**
+ * @brief Initializes sensor with type-specific configuration and initial value
+ * @param type The sensor type to initialize
+ * 
+ * Performs complete sensor initialization:
+ * 1. Captures current timestamp
+ * 2. Configures type-specific parameters (range, base value, etc.)
+ * 3. Generates unique device ID
+ * 4. Generates initial sensor reading with 1% fault probability
+ */
 void Event::SensorEvent::init(SensorType type) {
     // Get the timestamp for the current date and time
     getTimeStamp();
@@ -25,6 +35,13 @@ void Event::SensorEvent::init(SensorType type) {
     }
 }
 
+/**
+ * @brief Generates a new sensor reading with updated timestamp
+ * 
+ * Updates the timestamp to current time and generates a new random value
+ * within the sensor's configured range. Includes 1% probability of fault
+ * condition (0.0 value).
+ */
 void Event::SensorEvent::recalc() {
     getTimeStamp();
     
@@ -36,6 +53,16 @@ void Event::SensorEvent::recalc() {
 }
 
 
+/**
+ * @brief Configures sensor parameters based on type
+ * @param type Sensor type to configure
+ * @return Status::OK on success, Status::ERROR for unknown type
+ * 
+ * Sets type-specific parameters:
+ * - CoSensor: 50-150 ppm range
+ * - TempSensor: 15-30°C range  
+ * - PressureSensor: 1013-1033 hPa range
+ */
 Event::Status Event::SensorEvent::initType(SensorType type)
 {
     switch (type) {
@@ -64,6 +91,14 @@ Event::Status Event::SensorEvent::initType(SensorType type)
     return Status::OK;
 }
 
+/**
+ * @brief Formats timestamp as string using specified format
+ * @param fmt strftime format string
+ * @return Formatted timestamp, or empty string on error
+ * 
+ * Uses platform-specific localtime functions for thread safety.
+ * Default format: "%Y-%m-%d %H:%M:%S"
+ */
 std::string Event::SensorEvent::getTimestampString(const char* fmt) const {
     std::time_t time = timestamp_;
     std::tm tm_buf{};

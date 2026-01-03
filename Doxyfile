@@ -1,0 +1,411 @@
+# Doxyfile for Event-Bus Project
+# Configuration file for Doxygen documentation generation
+
+#---------------------------------------------------------------------------
+# Project related configuration options
+#---------------------------------------------------------------------------
+
+# Project name
+PROJECT_NAME           = "Event-Bus System"
+
+# Project brief description
+PROJECT_BRIEF          = "Thread-safe event-driven sensor simulation system"
+
+# Project version/number
+PROJECT_NUMBER         = "1.0.0"
+
+# Output directory for generated documentation
+OUTPUT_DIRECTORY       = docs
+
+# Create subdirectories for output
+CREATE_SUBDIRS         = NO
+
+# Allow Unicode in output
+ALLOW_UNICODE_NAMES    = YES
+
+# Output language
+OUTPUT_LANGUAGE        = English
+
+#---------------------------------------------------------------------------
+# Build related configuration options
+#---------------------------------------------------------------------------
+
+# Extract all entities even if not documented
+EXTRACT_ALL            = YES
+
+# Extract private members
+EXTRACT_PRIVATE        = YES
+
+# Extract static members
+EXTRACT_STATIC         = YES
+
+# Extract local classes
+EXTRACT_LOCAL_CLASSES  = YES
+
+# Show include files
+SHOW_INCLUDE_FILES     = YES
+
+# Show namespaces
+SHOW_NAMESPACES        = YES
+
+# Case sensitive file names
+CASE_SENSE_NAMES       = YES
+
+# Sort members alphabetically
+SORT_MEMBER_DOCS       = YES
+
+# Sort brief documentation
+SORT_BRIEF_DOCS        = YES
+
+#---------------------------------------------------------------------------
+# Configuration options related to warning and progress messages
+#---------------------------------------------------------------------------
+
+# Suppress output
+QUIET                  = NO
+
+# Show warnings
+WARNINGS               = YES
+
+# Warn if undocumented
+WARN_IF_UNDOCUMENTED   = YES
+
+# Warn about wrong documentation
+WARN_IF_DOC_ERROR      = YES
+
+# Warn about incomplete documentation
+WARN_NO_PARAMDOC       = YES
+
+# Warning format
+WARN_FORMAT            = "$file:$line: $text"
+
+#---------------------------------------------------------------------------
+# Configuration options related to the input files
+#---------------------------------------------------------------------------
+
+# Input source directories
+INPUT                  = include \
+                         src \
+                         tests \
+                         README.md
+
+# File patterns to include
+FILE_PATTERNS          = *.h \
+                         *.cpp \
+                         *.md
+
+# Recursive directory search
+RECURSIVE              = YES
+
+# Exclude patterns
+EXCLUDE_PATTERNS       = */build/* \
+                         */cmake-build-* \
+                         */.git/* \
+                         */callgrind/* \
+                         */gprof/* \
+                         */helgrind/* \
+                         */memcheck/* \
+                         */.tool_result/* \
+                         */.devcontainer/*
+
+# Use markdown support
+USE_MDFILE_AS_MAINPAGE = README.md
+
+#---------------------------------------------------------------------------
+# Configuration options related to source browsing
+#---------------------------------------------------------------------------
+
+# Generate source browser
+SOURCE_BROWSER         = YES
+
+# Include source code inline
+INLINE_SOURCES         = NO
+
+# Strip code comments in source
+STRIP_CODE_COMMENTS    = NO
+
+# Reference by relation
+REFERENCED_BY_RELATION = YES
+
+# Reference relation
+REFERENCES_RELATION    = YES
+
+# Link to source
+REFERENCES_LINK_SOURCE = YES
+
+# Use HTAGS for source browsing
+USE_HTAGS              = NO
+
+# Show verbatim headers
+VERBATIM_HEADERS       = YES
+
+#---------------------------------------------------------------------------
+# Configuration options related to the alphabetical class index
+#---------------------------------------------------------------------------
+
+# Generate alphabetical index
+ALPHABETICAL_INDEX     = YES
+
+# Columns in index
+COLS_IN_ALPHA_INDEX    = 5
+
+#---------------------------------------------------------------------------
+# Configuration options related to the HTML output
+#---------------------------------------------------------------------------
+
+# Generate HTML
+GENERATE_HTML          = YES
+
+# HTML output directory
+HTML_OUTPUT            = html
+
+# HTML file extension
+HTML_FILE_EXTENSION    = .html
+
+# HTML header file
+HTML_HEADER            = 
+
+# HTML footer file
+HTML_FOOTER            = 
+
+# HTML stylesheet
+HTML_STYLESHEET        = 
+
+# HTML extra stylesheet
+HTML_EXTRA_STYLESHEET  = 
+
+# HTML extra files
+HTML_EXTRA_FILES       = 
+
+# HTML color style
+HTML_COLORSTYLE_HUE    = 220
+
+# HTML color saturation
+HTML_COLORSTYLE_SAT    = 100
+
+# HTML color gamma
+HTML_COLORSTYLE_GAMMA  = 80
+
+# Timestamp in footer
+HTML_TIMESTAMP         = YES
+
+# Dynamic sections
+HTML_DYNAMIC_SECTIONS  = YES
+
+# HTML index trees
+HTML_INDEX_NUM_ENTRIES = 100
+
+# Generate tree view
+GENERATE_TREEVIEW      = YES
+
+# Enum values per line
+ENUM_VALUES_PER_LINE   = 1
+
+# Tree view width
+TREEVIEW_WIDTH         = 250
+
+# External links in window
+EXT_LINKS_IN_WINDOW    = NO
+
+#---------------------------------------------------------------------------
+# Configuration options related to the LaTeX output
+#---------------------------------------------------------------------------
+
+# Generate LaTeX (disabled by default)
+GENERATE_LATEX         = NO
+
+#---------------------------------------------------------------------------
+# Configuration options related to the RTF output
+#---------------------------------------------------------------------------
+
+# Generate RTF (disabled)
+GENERATE_RTF           = NO
+
+#---------------------------------------------------------------------------
+# Configuration options related to the man page output
+#---------------------------------------------------------------------------
+
+# Generate man pages (disabled)
+GENERATE_MAN           = NO
+
+#---------------------------------------------------------------------------
+# Configuration options related to the XML output
+#---------------------------------------------------------------------------
+
+# Generate XML (useful for post-processing)
+GENERATE_XML           = NO
+
+#---------------------------------------------------------------------------
+# Configuration options related to the preprocessor
+#---------------------------------------------------------------------------
+
+# Enable preprocessing
+ENABLE_PREPROCESSING   = YES
+
+# Expand macros
+MACRO_EXPANSION        = YES
+
+# Expand only predefined macros
+EXPAND_ONLY_PREDEF     = NO
+
+# Search includes
+SEARCH_INCLUDES        = YES
+
+# Include path
+INCLUDE_PATH           = include
+
+# Include file patterns
+INCLUDE_FILE_PATTERNS  = 
+
+# Predefined macros
+PREDEFINED             = 
+
+# Skip function macros
+SKIP_FUNCTION_MACROS   = YES
+
+#---------------------------------------------------------------------------
+# Configuration options related to external references
+#---------------------------------------------------------------------------
+
+# Generate tag file
+GENERATE_TAGFILE       = 
+
+# All external groups
+ALLEXTERNALS           = NO
+
+# External groups
+EXTERNAL_GROUPS        = YES
+
+# External pages
+EXTERNAL_PAGES         = YES
+
+#---------------------------------------------------------------------------
+# Configuration options related to the dot tool
+#---------------------------------------------------------------------------
+
+# Class diagrams
+CLASS_DIAGRAMS         = YES
+
+# Hide undocumented relations
+HIDE_UNDOC_RELATIONS   = NO
+
+# Use dot tool from Graphviz
+HAVE_DOT               = YES
+
+# Dot number of threads
+DOT_NUM_THREADS        = 4
+
+# Dot font name
+DOT_FONTNAME           = Helvetica
+
+# Dot font size
+DOT_FONTSIZE           = 10
+
+# Class graph
+CLASS_GRAPH            = YES
+
+# Collaboration graph
+COLLABORATION_GRAPH    = YES
+
+# Group graphs
+GROUP_GRAPHS           = YES
+
+# UML look
+UML_LOOK               = YES
+
+# UML limit relations
+UML_LIMIT_NUM_FIELDS   = 10
+
+# Template relations
+TEMPLATE_RELATIONS     = YES
+
+# Include graph
+INCLUDE_GRAPH          = YES
+
+# Included by graph
+INCLUDED_BY_GRAPH      = YES
+
+# Call graph
+CALL_GRAPH             = YES
+
+# Caller graph
+CALLER_GRAPH           = YES
+
+# Graphical hierarchy
+GRAPHICAL_HIERARCHY    = YES
+
+# Directory graph
+DIRECTORY_GRAPH        = YES
+
+# Dot image format
+DOT_IMAGE_FORMAT       = svg
+
+# Interactive SVG
+INTERACTIVE_SVG        = YES
+
+# Dot graph max nodes
+DOT_GRAPH_MAX_NODES    = 50
+
+# Max dot graph depth
+MAX_DOT_GRAPH_DEPTH    = 0
+
+# Generate legend
+GENERATE_LEGEND        = YES
+
+# Dot cleanup
+DOT_CLEANUP            = YES
+
+#---------------------------------------------------------------------------
+# Custom configuration for this project
+#---------------------------------------------------------------------------
+
+# Enable C++ support
+OPTIMIZE_OUTPUT_FOR_C  = NO
+
+# C++ namespaces
+CPP_CLI_SUPPORT        = NO
+
+# Builtin STL support
+BUILTIN_STL_SUPPORT    = YES
+
+# Distribute member groups
+DISTRIBUTE_GROUP_DOC   = NO
+
+# Inline inherited members
+INLINE_INHERITED_MEMB  = NO
+
+# Full path names
+FULL_PATH_NAMES        = YES
+
+# Strip from path
+STRIP_FROM_PATH        = 
+
+# Strip from include path
+STRIP_FROM_INC_PATH    = include
+
+# Short names
+SHORT_NAMES            = NO
+
+# Javadoc auto brief
+JAVADOC_AUTOBRIEF      = YES
+
+# Qt auto brief
+QT_AUTOBRIEF           = NO
+
+# Multiline CPP brief
+MULTILINE_CPP_IS_BRIEF = NO
+
+# Inherit docs
+INHERIT_DOCS           = YES
+
+# Separate member pages
+SEPARATE_MEMBER_PAGES  = NO
+
+# Tab size
+TAB_SIZE               = 4
+
+# Markdown support
+MARKDOWN_SUPPORT       = YES
+
+# Auto link
+AUTOLINK_SUPPORT       = YES

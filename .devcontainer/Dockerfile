@@ -10,9 +10,9 @@ ARG ENABLE_GPROF=OFF
 # No interactive promts during package install
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install GCC, CMake, Make, Git, GoogleTest
+# Install GCC, CMake, Make, Git, GoogleTest, lcov for coverage
 RUN apt-get update && apt-get install -y \
-    g++ cmake make git libgtest-dev && \
+    g++ cmake make git libgtest-dev lcov && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -31,16 +31,49 @@ COPY src/ src/
 COPY include/ include/
 COPY tests/ tests/
 
-# Configure project
-RUN cmake -B build -S . \
-    -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
-    -DENABLE_GPROF=${ENABLE_GPROF} \
-    -DCMAKE_CXX_FLAGS_RELEASE="-Os -DNDEBUG" \
-    -DCMAKE_CXX_FLAGS_RELWITHDEBINFO="-Os -g -DNDEBUG"
+# Configure project with coverage flags for Debug builds
+RUN if [ "${BUILD_TYPE}" = "Debug" ]; then \
+        cmake -B build -S . \
+            -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+            -DENABLE_GPROF=${ENABLE_GPROF} \
+            -DCMAKE_CXX_FLAGS_DEBUG="-g -O0 --coverage -fprofile-arcs -ftest-coverage" \
+            -DCMAKE_EXE_LINKER_FLAGS_DEBUG="--coverage"; \
+    else \
+        cmake -B build -S . \
+            -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+            -DENABLE_GPROF=${ENABLE_GPROF} \
+            -DCMAKE_CXX_FLAGS_RELEASE="-Os -DNDEBUG" \
+            -DCMAKE_CXX_FLAGS_RELWITHDEBINFO="-Os -g -DNDEBUG"; \
+    fi
 
 # Build and run unittests
 RUN cmake --build build --config ${BUILD_TYPE} && \
     ctest --test-dir build --output-on-failure -V
+
+# Generate coverage report for Debug builds
+RUN if [ "${BUILD_TYPE}" = "Debug" ]; then \
+        cd build && \
+        lcov --capture --directory . --output-file coverage.info && \
+        lcov --remove coverage.info '/usr/*' '*/tests/*' '*/_deps/*' --output-file coverage_filtered.info && \
+        lcov --list coverage_filtered.info && \
+        echo "========================================" && \
+        echo "COVERAGE SUMMARY" && \
+        echo "========================================" && \
+        lcov --summary coverage_filtered.info && \
+        COVERAGE_PERCENT=$(lcov --summary coverage_filtered.info 2>&1 | grep "lines" \
+            | grep -oP '\d+\.\d+(?=%)' | head -1) && \
+        echo "Coverage: ${COVERAGE_PERCENT}%" && \
+        if [ -n "${COVERAGE_PERCENT}" ]; then \
+            if awk -v cov="${COVERAGE_PERCENT}" 'BEGIN {exit !(cov >= 95.0)}'; then \
+                echo "✓ Coverage target met: ${COVERAGE_PERCENT}% >= 95%"; \
+            else \
+                echo "✗ Coverage target NOT met: ${COVERAGE_PERCENT}% < 95%"; \
+                echo "Coverage report saved to build/coverage_filtered.info"; \
+            fi; \
+        fi && \
+        genhtml coverage_filtered.info --output-directory coverage_html && \
+        echo "HTML coverage report generated in build/coverage_html"; \
+    fi
 
 # ==============
 # Stage 2: Runtime
@@ -74,10 +107,20 @@ WORKDIR /app
 
 # Add a non-root user for sec
 RUN useradd -m runner_user
-USER runner_user
 
 # Copy just the build binary from Stage 1
 COPY --from=build /app/build/event-bus .
+
+# Copy coverage reports if they exist (for Debug builds)
+RUN --mount=type=bind,from=build,source=/app/build,target=/tmp/build \
+    if [ -f /tmp/build/coverage_filtered.info ]; then \
+        cp /tmp/build/coverage_filtered.info ./coverage_filtered.info; \
+    fi && \
+    if [ -d /tmp/build/coverage_html ]; then \
+        cp -r /tmp/build/coverage_html ./coverage_html; \
+    fi
+
+USER runner_user
 
 # Default command
 CMD ["./event-bus"]
